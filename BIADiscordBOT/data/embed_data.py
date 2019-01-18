@@ -45,6 +45,27 @@ async def embed_bestboards_data(players_stats):
     return embed
 
 
+async def embed_best_data():
+    embed = discord.Embed(title='=== Top of the top ===', type="rich", colour=0xDEADBF)
+    players_table = await pubg_data.generate_main_players_table()
+    #message_list = await pubg_data.get_board(players_stats, "assists", ["assists", "revives", "teamKills"])
+    name = ''
+    main = ''
+    extras = ''
+    i = 1
+    for row in players_table:
+        name += str(i) + ". " + row[0] + '\n'
+        main += str(round(row[1], 2)) + '\n'
+        extras += str(row[2]) + "/" + str(row[3]) + "/" + str(row[4]) + '\n'
+        i = i + 1
+
+    embed.add_field(name="Nick", value=name, inline=True)
+    embed.add_field(name="Score", value=main, inline=True)
+    embed.add_field(name="Wins/T10s/Kills", value=extras, inline=True)
+
+    return embed
+
+
 async def embed_assistboards_data(players_stats):
     embed = discord.Embed(title='=== THE ASSISTMAN ===', type="rich", colour=0xDEADBF)
     message_list = await pubg_data.get_board(players_stats, "assists", ["assists", "revives", "teamKills"])

@@ -27,7 +27,7 @@ async def IsDataValid(dataRinnovo):
         # print(datetime_object.date())
         return True
     except:
-        print('data non valida')
+        print('common non valida')
         return False
 
 
@@ -60,7 +60,7 @@ async def sync_users(users):
             writer.writerow({COLUMNS[0]: user.id, COLUMNS[1]: user, COLUMNS[2]: '01/01/1900'})
 
 
-# edit data rinnovo user
+# edit common rinnovo user
 async def remove_user(userId):
     usersList = await GetAllUsersFromCSV()
     isFound = False
@@ -93,14 +93,14 @@ async def remove_user(userId):
             writer.writerow(mydict)
 
 
-# edit data rinnovo user
+# edit common rinnovo user
 async def count_user_delayed():
     usersList = await GetAllUsersFromCSV()
     print(str(len(usersList)))
     return str(len(usersList))
 
 
-# edit data rinnovo user
+# edit common rinnovo user
 async def edit_user_dataRinnovo(user):
     usersList = await GetAllUsersFromCSV()
 
