@@ -9,8 +9,8 @@ from discord.ext.commands import Bot
 from prettytable import PrettyTable
 
 from config import config
-from data import data_bot
-from data import embed_data
+from common import data_bot
+from common import embed_data
 from pubg import pubg_data
 
 BOT_PREFIX = ('?', '!')
@@ -78,7 +78,15 @@ assist 10%
 medic 8%
 cecchino 6%
 
+generate_main_players_table
 """
+
+
+@client.command(pass_context=True)
+async def pubg_best(context):
+    #players_table = await pubg_data.generate_main_players_table()
+    embed = await embed_data.embed_best_data()
+    await client.say(embed=embed)
 
 
 @client.command(pass_context=True)
@@ -99,6 +107,10 @@ async def test(context, player_name):
     """
     if context.message.author.server_permissions.administrator:
         players_stats = await pubg_data.get_all_players_stats()
+
+        await pubg_data.get_winners(players_stats)
+        return 0
+
         await pubg_data.get_bestboards(players_stats)
         return 0
 
@@ -272,9 +284,9 @@ async def pubg_syncall_live(context):
 
 
 @client.command(pass_context=True)
-async def pubg_best(context):
+async def pubg_best_boards(context):
     """
-    Stampa la classifica dei migliori data la media delle posizioni in tutte le classifiche
+    Stampa la classifica dei migliori common la media delle posizioni in tutte le classifiche
     :param context:
     :return:
     """
@@ -420,12 +432,12 @@ async def pubg_unregister(context, player_name):
 async def scaduti(context):
     """
     todo
-    ritorna tutti i membri con data di rinnovo scaduta
+    ritorna tutti i membri con common di rinnovo scaduta
     :param context:
     :return:
     """
     if context.message.author.server_permissions.administrator:
-        await client.say('I seguenti membri hanno una data di rinnovo scaduta: ')
+        await client.say('I seguenti membri hanno una common di rinnovo scaduta: ')
         dateNow = datetime.now()
         message = []
         userList = await data_bot.GetAllUsersFromCSV()
@@ -585,7 +597,7 @@ async def cancella(context, userId):
 async def rinnovo(context, userId, dataRinnovo):
     """
     todo
-    rinnova data di rinnovo a un membro
+    rinnova common di rinnovo a un membro
     :param context:
     :param userId:
     :param dataRinnovo:
@@ -598,10 +610,10 @@ async def rinnovo(context, userId, dataRinnovo):
         if not await data_bot.IsDataValid(dataRinnovo):
             await client.say('Data non valida! Utilizzare il seguente formato: gg/mm/aaaa.')
         else:
-            print('Rinnovo data di scadenza del membro: ' + nomeUtente + ' nuova scadenza:' + dataRinnovo)
+            print('Rinnovo common di scadenza del membro: ' + nomeUtente + ' nuova scadenza:' + dataRinnovo)
             print({COLUMNS[0]: userId, COLUMNS[1]: nomeUtente, COLUMNS[2]: dataRinnovo})
             await data_bot.edit_user_dataRinnovo({COLUMNS[0]: userId, COLUMNS[1]: nomeUtente, COLUMNS[2]: dataRinnovo})
-            await client.say('Rinnovo data di scadenza del membro: ' + nomeUtente + ' nuova scadenza:' + dataRinnovo)
+            await client.say('Rinnovo common di scadenza del membro: ' + nomeUtente + ' nuova scadenza:' + dataRinnovo)
     else:
         await client.say(str(context.message.author) + 'Non hai i permessi per eseguire questo comando!')
 # endregion
