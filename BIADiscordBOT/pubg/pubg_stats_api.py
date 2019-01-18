@@ -44,7 +44,7 @@ async def get_player_stats_temp():
 
     json_data = r.json()
     allstats = []
-    for entry in json_data["data"]:
+    for entry in json_data["common"]:
         playerstats = entry["attributes"]["name"]
         playerid = entry["id"]
         print(playerstats + ":" + playerid)
@@ -55,7 +55,7 @@ async def get_player_stats_temp():
         #print("seasonid="+seasonid)
         #for player in i["attributes"]:
         #    print(str(player.get("name")))
-    #print(json_data["data"])
+    #print(json_data["common"])
     return allstats
 """
 
@@ -93,13 +93,13 @@ async def get_player_details_det(account_id, season_id):
     r = requests.get(link, headers=header)
 
     json_data = r.json()
-    rank_points =  json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["rankPoints"]
-    #match_played = json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["bestRankPoint"]
-    wins = json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["wins"]
-    kills = json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["kills"]
-    headshots = json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["headshotKills"]
-    top_ten = json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["top10s"]
-    longest_kill = json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]["longestKill"]
+    rank_points =  json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["rankPoints"]
+    #match_played = json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["bestRankPoint"]
+    wins = json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["wins"]
+    kills = json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["kills"]
+    headshots = json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["headshotKills"]
+    top_ten = json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["top10s"]
+    longest_kill = json_data["common"]["attributes"]["gameModeStats"]["squad-fpp"]["longestKill"]
 
     text = "Points:" + str(rank_points) + " Wins:" + str(wins) + " Kills:" + str(kills) + " LongestKill:" + str(longest_kill) + " HeadShot kills:" + str(headshots)
     print(text)
@@ -111,6 +111,7 @@ async def get_player_details(account_id, season_id):
     link = "https://api.pubg.com/shards/steam/players/" + account_id + "/seasons/" + season_id
     r = requests.get(link, headers=header)
     json_data = r.json()
+    print(json_data)
 
     return json_data["data"]["attributes"]["gameModeStats"]["squad-fpp"]
 
