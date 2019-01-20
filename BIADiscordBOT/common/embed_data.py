@@ -2,9 +2,23 @@ import discord
 from pubg import pubg_data
 
 
+async def embed_legenda():
+    embed = discord.Embed(title="LEGENDA", type="rich", colour=0xFF0000)
+    last_update = await pubg_data.get_last_update()
+    embed.description = "Stats aggiornate al: " + str(last_update)
+    embed.add_field(name="W", value="WINS", inline=True)
+    embed.add_field(name="T10", value="TOP 10", inline=True)
+    embed.add_field(name="S", value="Score", inline=True)
+    embed.add_field(name="K", value="Kills", inline=True)
+    embed.add_field(name="D", value="Damage", inline=True)
+    embed.add_field(name="P", value="Played Match", inline=True)
+
+    return embed
+
+
 async def embed_default(players_table, title, description, headers, colour=0xDEADBF, is_average=False):
     embed = discord.Embed(title=title, description=description, type="rich", colour=colour)
-    #last_update = await pubg_data.get_last_update()
+     #last_update = await pubg_data.get_last_update()
     name = ''
     main = ''
     extras = ''
@@ -26,7 +40,7 @@ async def embed_default(players_table, title, description, headers, colour=0xDEA
 
 
 async def embed_best_data():
-    embed = discord.Embed(title='=== TOP of the TOP ===', type="rich", colour=0xDEADBF)
+    embed = discord.Embed(title='=== TOP of the TOP ===', type="rich", colour=0xFF0000)
     last_update = await pubg_data.get_last_update()
     embed.description = "Statistiche aggiornate al: " + str(last_update)
     players_table = await pubg_data.generate_main_players_table()
