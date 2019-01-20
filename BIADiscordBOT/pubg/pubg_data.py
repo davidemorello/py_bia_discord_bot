@@ -1,14 +1,13 @@
 from config import config
 from pubg import pubg_stats_api
 import json
-from time import sleep
 import asyncio
-import numpy
 from pubg import pubg_rank_generator
+from datetime import datetime
 
 pubg_file = config.config['pubg_file']
 pubg_player_stats = config.config['pubg_player_stats']
-min_played_games = 10
+min_played_match = int(config.config["min_played_match"])
 
 
 # region Chiamate API pubg LIVE
@@ -126,6 +125,10 @@ async def sync_pubg_players_stats():
         users_dict[user["player_name"]] = await pubg_stats_api.get_player_details(user["account_id"], season_id)
         i = i + 1
 
+    data["last_update"] = str(datetime.now()).split('.')[0]
+    with open(pubg_file, 'w') as file:
+        json.dump(data, file)
+
     with open(pubg_player_stats, 'w') as file:
         json.dump(users_dict, file)
 
@@ -162,7 +165,13 @@ async def get_live_player_detail(player_name):
 async def generate_main_players_table():
     players_stats = await get_all_players_stats()
     players_table = await pubg_rank_generator.generate_all_tables(players_stats)
-    return players_table
+    return players_table[1]
+
+
+async def generate_all_classifiche():
+    players_stats = await get_all_players_stats()
+    classifiche = await pubg_rank_generator.generate_all_tables(players_stats)
+    return classifiche[0]
 
 
 async def get_lifetime_player_stats(player_name):
@@ -187,325 +196,6 @@ async def get_lifetime_player_stats(player_name):
             # player_data[user["player_name"]] = player_data
 
     return player_data
-
-
-async def genera_classifica_generale(players_stats):
-    """
-    WIN% x3
-
-    WINs x2.1 30
-    Score x1.9 40
-
-    Top10% x1.6
-    top10 x1.7
-
-    kills%  x1.4 18
-    kills   x1.3
-    damage% x1.2
-    damage  x1.1
-
-    assist% x0.59
-    hs% x0.57
-    headshots  x0.53
-    assist x0.52
-    revive% x0.51
-
-    medic(revive) x0.35
-    sniper(longkill) x 0.3
-
-    :return:
-    """
-    wins_perc_ranks = await get_board(players_stats, "wins", ["wins", "top10s", "roundsPlayed"], False)
-    wins_ranks = await get_board(players_stats, "wins", ["wins", "top10s", "roundsPlayed"], False)
-
-    scores = await get_leaderboards(players_stats)
-    killers = await get_killerboards(players_stats)
-    medics = await get_assistboards(players_stats)
-    winners = await get_winnerboards(players_stats)
-    snipers = await get_sniperboards(players_stats)
-    damages = await get_damageboards(players_stats)
-
-    bestboards = []
-
-    # calcolo media posizione di ogni classifica per ogni player e la ordino (media minore)
-    for player in scores:
-        player_positions = [
-            await get_position(scores, player[0]),
-            await get_position(killers, player[0]),
-            await get_position(medics, player[0]),
-            await get_position(winners, player[0]),
-            await get_position(snipers, player[0])
-        ]
-        pos_media = numpy.mean(player_positions)
-        best_for = ""
-
-        if 1 in player_positions:
-            if player_positions[0] == 1:
-                best_for += "Best Score "
-            if player_positions[1] == 1:
-                best_for += "Best Killer "
-            if player_positions[2] == 1:
-                best_for += "Best Medic "
-            if player_positions[3] == 1:
-                best_for += "Best Winner "
-            if player_positions[4] == 1:
-                best_for += "Best Sniper "
-
-        bestboards.append([player[0], pos_media, best_for])
-
-    bestboards.sort(key=takeSecond, reverse=False)
-    print(bestboards)
-    return bestboards
-
-
-async def get_bestboards(players_stats):
-    """
-
-    :return:
-    """
-
-    scores = await get_leaderboards(players_stats)
-    killers = await get_killerboards(players_stats)
-    medics = await get_assistboards(players_stats)
-    winners = await get_winnerboards(players_stats)
-    snipers = await get_sniperboards(players_stats)
-
-    bestboards = []
-
-    # calcolo media posizione di ogni classifica per ogni player e la ordino (media minore)
-    for player in scores:
-        player_positions = [
-            await get_position(scores, player[0]),
-            await get_position(killers, player[0]),
-            await get_position(medics, player[0]),
-            await get_position(winners, player[0]),
-            await get_position(snipers, player[0])
-        ]
-        pos_media = numpy.mean(player_positions)
-        best_for = ""
-
-        if 1 in player_positions:
-            if player_positions[0] == 1:
-                best_for += "Best Score "
-            if player_positions[1] == 1:
-                best_for += "Best Killer "
-            if player_positions[2] == 1:
-                best_for += "Best Medic "
-            if player_positions[3] == 1:
-                best_for += "Best Winner "
-            if player_positions[4] == 1:
-                best_for += "Best Sniper "
-
-        bestboards.append([player[0], pos_media, best_for])
-
-    bestboards.sort(key=takeSecond, reverse=False)
-    print(bestboards)
-    return bestboards
-
-
-async def get_position(board, player_name):
-    index = 1
-    for item in board:
-        if item[0] == player_name:
-            return index
-        index = index + 1
-
-
-async def get_board(players_stats, main_field, list_extra, ismean=True):
-    """
-
-    :return:
-    """
-    players_data = []
-
-    for player in players_stats:
-        rounds_played = int(players_stats[player].get("roundsPlayed"))
-        if rounds_played > min_played_games:
-            if ismean:
-                main = round(int(players_stats[player].get(main_field)) / rounds_played, 2)
-            else:
-                main = players_stats[player].get(main_field)
-
-            extras = "{0}/{1}/{2}".format(str(players_stats[player].get(list_extra[0])),
-                                          str(players_stats[player].get(list_extra[1])),
-                                          str(round(players_stats[player].get(list_extra[2]))))
-
-            players_data.append([player, main, extras])
-
-    players_data.sort(key=takeSecond, reverse=True)
-
-    return players_data
-
-
-async def get_winners(players_stats):
-    """
-
-       :return:
-       """
-    players_wins = []
-
-    for player in players_stats:
-        if players_stats[player].get("roundsPlayed") > min_played_games:
-            wins = players_stats[player].get("wins")
-            #wins_perc = round(wins / players_stats[player].get("roundsPlayed") * 100, 2)
-            top10 = players_stats[player].get("top10s")
-            players_wins.append([player, wins, top10])
-
-    players_wins.sort(key=lambda x: (x[1], x[2]), reverse=True)
-    print(players_wins)
-    return players_wins
-
-
-# region METODI Sostituiti con uno generico ==> get_board(...)
-
-async def get_killerboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_killers = []
-
-    for player in players_stats:
-        if int(players_stats[player].get("roundsPlayed")) > min_played_games:
-            kd = round(int(players_stats[player].get("kills")) / int(players_stats[player].get("roundsPlayed")), 2)
-            khd = "{0}/{1}/{2}".format(str(players_stats[player].get("kills")),
-                                       str(players_stats[player].get("headshotKills")),
-                                       str(round(players_stats[player].get("damageDealt"))))
-
-            players_killers.append([player, kd, khd])
-
-    players_killers.sort(key=takeSecond, reverse=True)
-
-    return players_killers
-
-
-async def get_leaderboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_scores = []
-
-    for player in players_stats:
-        if int(players_stats[player].get("roundsPlayed")) > min_played_games:
-            score = str(round(players_stats[player].get("rankPoints")))
-            wtp = '{0}/{1}/{2}'.format(str(players_stats[player].get("wins")),
-                                       str(players_stats[player].get("top10s")),
-                                       str(players_stats[player].get("roundsPlayed")))
-            players_scores.append([player, score, wtp])
-
-    players_scores.sort(key=takeSecond, reverse=True)
-
-    return players_scores
-
-
-async def get_damageboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_scores = []
-
-    for player in players_stats:
-        if int(players_stats[player].get("roundsPlayed")) > min_played_games:
-            dmg_perc = round(players_stats[player].get("damageDealt") / players_stats[player].get("roundsPlayed"))
-            # score = str(round(players_stats[player].get("damageDealt")))
-            wtp = "{0}/{1}/{2}".format(str(round(players_stats[player].get("damageDealt"))),
-                                       str(players_stats[player].get("kills")),
-                                       str(players_stats[player].get("roundMostKills")))
-            players_scores.append([player, dmg_perc, wtp])
-
-    players_scores.sort(key=takeSecond, reverse=True)
-
-    return players_scores
-
-
-async def get_assistboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_scores = []
-
-    for player in players_stats:
-        if int(players_stats[player].get("roundsPlayed")) > min_played_games:
-            assists = round(players_stats[player].get("assists") / players_stats[player].get("roundsPlayed"), 2)
-            # score = str(round(players_stats[player].get("damageDealt")))
-            wtp = str(round(players_stats[player].get("assists"))) + "/" + str(
-                players_stats[player].get("revives")) + "/" + str(players_stats[player].get("teamKills"))
-            players_scores.append([player, assists, wtp])
-
-    players_scores.sort(key=takeSecond, reverse=True)
-
-    return players_scores
-
-
-
-async def get_winnerboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_scores = []
-
-    for player in players_stats:
-        if players_stats[player].get("roundsPlayed") > min_played_games:
-            wins = players_stats[player].get("wins")
-            wins_perc = round(wins / players_stats[player].get("roundsPlayed") * 100, 2)
-            wtp = str(wins) + "/" + str(players_stats[player].get("top10s")) + "/" + str(
-                players_stats[player].get("roundsPlayed"))
-            players_scores.append([player, wins_perc, wtp])
-
-    players_scores.sort(key=takeSecond, reverse=True)
-
-    return players_scores
-
-
-async def get_medicboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_scores = []
-
-    for player in players_stats:
-        if players_stats[player].get("roundsPlayed") > min_played_games:
-            revives = players_stats[player].get("revives")
-            revives_perc = round(revives / players_stats[player].get("roundsPlayed") * 100, 2)
-            wtp = str(revives) + "/" + str(players_stats[player].get("assists")) + "/" + str(
-                players_stats[player].get("teamKills"))
-            players_scores.append([player, revives_perc, wtp])
-
-    players_scores.sort(key=takeSecond, reverse=True)
-
-    return players_scores
-
-
-async def get_sniperboards(players_stats):
-    """
-
-    :return:
-    """
-    # players_stats = await get_all_players_stats()
-    players_scores = []
-
-    for player in players_stats:
-        if int(players_stats[player].get("roundsPlayed")) > min_played_games:
-            long_kill = players_stats[player].get("longestKill")
-            hkd = str(players_stats[player].get("headshotKills")) + "/" + str(
-                players_stats[player].get("kills")) + "/" + str(round(players_stats[player].get("damageDealt")))
-            players_scores.append([player, long_kill, hkd])
-
-    players_scores.sort(key=takeSecond, reverse=True)
-
-    return players_scores
-# endregion
 
 # endregion
 
@@ -542,6 +232,17 @@ async def get_season_id():
         data = json.load(file)
 
     return data["season_id"]
+
+
+async def get_last_update():
+    """
+
+    :return:
+    """
+    with open(pubg_file) as file:
+        data = json.load(file)
+
+    return data["last_update"]
 
 
 async def get_account_id(player_name):
