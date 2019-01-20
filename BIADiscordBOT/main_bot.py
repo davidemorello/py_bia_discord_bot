@@ -164,6 +164,9 @@ async def pubg_classifiche(context):
     :param context:
     :return:
     """
+    embed = await embed_data.embed_legenda()
+    await client.say(embed=embed)
+
     #players_stats = await pubg_data.get_all_players_stats()
     classifiche = await pubg_data.generate_all_classifiche()
 
@@ -566,7 +569,7 @@ async def list_servers():
         print('Current servers :')
         for server in client.servers:
             print(server.name)
-            await asyncio.sleep(600)
+        await asyncio.sleep(600)
 
 
 @client.event
@@ -577,9 +580,11 @@ async def on_member_join(member):
     await client.send_message(discord.Object(id='445234463383748640'), message)
     # mail_log_f(subject, string)
 
+
 @client.event
 async def on_ready():
     await client.change_presence(game=Game(name='fare il BOT'))
+    await client.send_message(discord.Object(id='533011682428059649'), 'Eccomi sono di nuovo online!')
     await client.send_message(discord.Object(id='445234463383748640'), 'Eccomi sono di nuovo online!')
     print('Logged in as ' + client.user.name)
 
