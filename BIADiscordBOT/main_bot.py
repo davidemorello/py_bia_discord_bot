@@ -82,6 +82,7 @@ generate_main_players_table
 """
 
 
+# region COMANDI PUBG
 @client.command(pass_context=True)
 async def pubg_best(context):
     #players_table = await pubg_data.generate_main_players_table()
@@ -155,42 +156,6 @@ async def test(context, player_name):
         await client.say("Solo per tester...")
 
 
-# region COMANDI PUBG
-@client.command(pass_context=True)
-async def pubg_class(context):
-    """
-    Stampa tutte le classifiche disponibili
-    NO live
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-
-    embed = await embed_data.embed_bestboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_winnerboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_leaderboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_killerboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_damageboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_sniperboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_assistboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_medicboards_data(players_stats)
-    await client.say(embed=embed)
-
-
 @client.command(pass_context=True)
 async def pubg_classifiche(context):
     """
@@ -199,31 +164,67 @@ async def pubg_classifiche(context):
     :param context:
     :return:
     """
-    players_stats = await pubg_data.get_all_players_stats()
+    #players_stats = await pubg_data.get_all_players_stats()
+    classifiche = await pubg_data.generate_all_classifiche()
 
-    embed = await embed_data.embed_bestboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_winnerboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_leaderboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_killerboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_damageboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_sniperboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_assistboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_medicboards_data(players_stats)
-    await client.say(embed=embed)
+    #classifica[0] ==> nome classifica
+    #classifica[1] ==> classifica ordinata
+    for classifica in classifiche:
+        if classifica[0] == "WINS_AV":
+            #embed = await embed_data.embed_win_av(classifica[1], '=== ' + str(classifica[0]) + ' ===')
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', 'Wins %', "T10s/S/K/P", is_average=True)
+            await client.say(embed=embed)
+        elif classifica[0] == "WINS":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', 'Wins', "T10s/S/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "SCORES":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Score", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "TOP10_AV":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "top10 %", "W/S/K/P", is_average=True)
+            await client.say(embed=embed)
+        elif classifica[0] == "TOP10":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "top10", "W/S/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "KILLS_AV":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "kills %", "W/T10s/D/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "KILLS":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "kills", "W/T10s/D/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "DAMAGE_AV":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "damage %", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "DAMAGE":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "damage", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "ASSISTS_AV":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "assists %", "W/T10s/K/P", is_average=True)
+            await client.say(embed=embed)
+        elif classifica[0] == "ASSISTS":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "assists", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "HEADSHOTS_AV":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "headshots %", "W/T10s/K/P", is_average=True)
+            await client.say(embed=embed)
+        elif classifica[0] == "HEADSHOTS":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "headshots", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "REVIVES_AV":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "revives %", "W/T10s/K/P", is_average=True)
+            await client.say(embed=embed)
+        elif classifica[0] == "REVIVES":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "revives", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "SNIPERS":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "sniper long kill", "W/T10s/K/P")
+            await client.say(embed=embed)
+        elif classifica[0] == "PLAYEDMATCH":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "played match", "W/T10s/K/S")
+            await client.say(embed=embed)
+        elif classifica[0] == "MOSTKILLS":
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "most round kills", "W/T10s/K/P")
+            await client.say(embed=embed)
 
 
 @client.command(pass_context=True)
@@ -243,140 +244,20 @@ async def pubg_top10_live(context):
 
 
 @client.command(pass_context=True)
-async def pubg_syncall_live(context):
+async def pubg_sync(context):
     """
     !LIVE!Attenzione! è possibile richiedere le stats LIVE 10 volte ogni 60 secondi,
     per cui i tempi della sincronizzazione ammontano a : numero di giocatori * 60 secondi
     NON mandare altri comandi fino alla fine della sincronizzazione.
     Aggiorna tutti i membri registrati con le stats in tempo reale
-    Alla fine stampa leaderboards
     :param context:
     :return:
     """
     await client.say("Sincronizzazione in corso, non mandare altri comandi fino alla fine della sincronizzazione...")
-    await client.say("Tempo stimato : 90 secondi...")
+    await client.say("Tempo stimato : 120 secondi...")
     await client.say("...")
     await pubg_data.sync_pubg_players_stats()
     await client.say("Sincronizzazione completata!")
-
-    players_stats = await pubg_data.get_all_players_stats()
-
-    embed = await embed_data.embed_bestboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_leaderboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_killerboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_sniperboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_winnerboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_assistboards_data(players_stats)
-    await client.say(embed=embed)
-
-    embed = await embed_data.embed_damageboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_best_boards(context):
-    """
-    Stampa la classifica dei migliori common la media delle posizioni in tutte le classifiche
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_bestboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_damages(context):
-    """
-    Stampa la classifica dei migliori in base ai danni inflitti ai nemici
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_damageboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_assists(context):
-    """
-    Stampa la classifica dei migliori in base agli assists
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_assistboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_killers(context):
-    """
-    Stampa la classifica dei migliori killers in circolazione!
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_killerboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_leaders(context):
-    """
-    Stampa la classifica dei migliori score
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_leaderboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_winners(context):
-    """
-    Stampa la classifica in base alle vittorie
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_winnerboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_medics(context):
-    """
-    Stampa la classifica in base ai compagni resuscitati
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_medicboards_data(players_stats)
-    await client.say(embed=embed)
-
-
-@client.command(pass_context=True)
-async def pubg_snipers(context):
-    """
-    Stampa la classifica dei migliori cecchini in circolazione!
-    :param context:
-    :return:
-    """
-    players_stats = await pubg_data.get_all_players_stats()
-    embed = await embed_data.embed_sniperboards_data(players_stats)
-    await client.say(embed=embed)
 
 
 @client.command(pass_context=True)
