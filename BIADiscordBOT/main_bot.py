@@ -51,36 +51,6 @@ elif message.content.upper().startswith('?E'):
   await edit_user_dataRinnovo({COLUMNS[0]: message.author.id, COLUMNS[1]: message.author, COLUMNS[2]:'10/10/9999'})
 """
 
-"""
-vittoria 25%
-score 18%
-top10 17%
-killers 13%
-damage 10%
-assist 7%
-medic 5%
-cecchino 5%
-
-<02:27:08> "=BIA= Maycool": vittoria 25%
-top10 17%
-score 15%
-killers 13%
-damage 13%
-assist 7%
-medic 5%
-cecchino 5%
-
-<02:29:29> "=BIA= Maycool": vittoria 25%
-top10 20%
-killers 17%
-damage 15%
-assist 10%
-medic 8%
-cecchino 6%
-
-generate_main_players_table
-"""
-
 
 # region COMANDI PUBG
 @client.command(pass_context=True)
@@ -500,6 +470,7 @@ async def rinnovo(context, userId, dataRinnovo):
             await client.say('Rinnovo common di scadenza del membro: ' + nomeUtente + ' nuova scadenza:' + dataRinnovo)
     else:
         await client.say(str(context.message.author) + 'Non hai i permessi per eseguire questo comando!')
+
 # endregion
 
 
