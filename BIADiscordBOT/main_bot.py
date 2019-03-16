@@ -53,6 +53,24 @@ elif message.content.upper().startswith('?E'):
 
 
 # region COMANDI PUBG
+
+@client.command(pass_context=True)
+async def pubg_teams(context):
+    #discord.channel.Channel.voice_members
+    voice_channel = discord.utils.get(context.message.server.channels, name="#SalaRiunioni", type=discord.ChannelType.voice)
+    members = voice_channel.voice_members
+    #print(voice_channel)
+    for i in members:
+        print(i)
+        await client.say(i)
+
+@client.command(pass_context=True)
+async def pubg_roster(context):
+    #players_table = await pubg_data.generate_main_players_table()
+    embed = await embed_data.embed_roster("Roster", "")
+    await client.say(embed=embed)
+
+
 @client.command(pass_context=True)
 async def pubg_best(context):
     #players_table = await pubg_data.generate_main_players_table()
@@ -145,58 +163,58 @@ async def pubg_classifiche(context):
     for classifica in classifiche:
         if classifica[0] == "WINS_AV":
             #embed = await embed_data.embed_win_av(classifica[1], '=== ' + str(classifica[0]) + ' ===')
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', 'Wins %', "T10s/S/K/P", is_average=True)
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', 'Wins %', "W/T10s/K/P", is_average=True)
             await client.say(embed=embed)
         elif classifica[0] == "WINS":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', 'Wins', "T10s/S/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', 'Wins', "W%/T10s/K/P")
             await client.say(embed=embed)
         elif classifica[0] == "SCORES":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Score", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Score", "%/W/T10s/P", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "TOP10_AV":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "top10 %", "W/S/K/P", is_average=True)
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "T10s%", "T10/W/K/P", is_average=True)
             await client.say(embed=embed)
         elif classifica[0] == "TOP10":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "top10", "W/S/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "T10s", "T10s%/W/K/P")
             await client.say(embed=embed)
         elif classifica[0] == "KILLS_AV":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "kills %", "W/T10s/D/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Kills %", "K/W/T10s/P", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "KILLS":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "kills", "W/T10s/D/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Kills", "K%/W/T10s/P", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "DAMAGE_AV":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "damage %", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Damage %", "D/W/T10s/P", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "DAMAGE":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "damage", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Damage", "D%/W/T10s/P", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "ASSISTS_AV":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "assists %", "W/T10s/K/P", is_average=True)
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Assists %", "A/W/T10s/P", is_average=True)
             await client.say(embed=embed)
         elif classifica[0] == "ASSISTS":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "assists", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Assists", "A%/W/T10s/P")
             await client.say(embed=embed)
         elif classifica[0] == "HEADSHOTS_AV":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "headshots %", "W/T10s/K/P", is_average=True)
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "HeadShots %", "HS/W/T10s/P", is_average=True)
             await client.say(embed=embed)
         elif classifica[0] == "HEADSHOTS":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "headshots", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "HeadShots", "HS%/W/T10s/P")
             await client.say(embed=embed)
         elif classifica[0] == "REVIVES_AV":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "revives %", "W/T10s/K/P", is_average=True)
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Revives %", "R/W/T10s/P", is_average=True)
             await client.say(embed=embed)
         elif classifica[0] == "REVIVES":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "revives", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Revives", "R%/W/T10s/P")
             await client.say(embed=embed)
         elif classifica[0] == "SNIPERS":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "sniper long kill", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Sniper long kill", "%/W/T10s/P", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "PLAYEDMATCH":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "played match", "W/T10s/K/S")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Played match", "%/W/T10s/K", is_perc=False)
             await client.say(embed=embed)
         elif classifica[0] == "MOSTKILLS":
-            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "most round kills", "W/T10s/K/P")
+            embed = await embed_data.embed_default(classifica[1], '=== ' + str(classifica[0]) + ' ===', "Most round kills", "%/W/T10s/P")
             await client.say(embed=embed)
 
 
@@ -282,6 +300,21 @@ async def pubg_unregister(context, player_name):
 
 
 # region COMANDI GESTIONE MEMBRI BIA - in lavorazione
+@client.command(pass_context=True)
+async def bia_roster(context):
+    """
+
+    :param context:
+    :return:
+    """
+    for member in context.server.members:
+        for role in member.roles:
+            print(role)
+
+    for m in client.get_all_members():
+        print(m)
+
+
 @client.command(pass_context=True)
 async def scaduti(context):
     """
