@@ -16,20 +16,27 @@ async def embed_legenda():
     return embed
 
 
-async def embed_default(players_table, title, description, headers, colour=0xDEADBF, is_average=False):
+async def embed_default(players_table, title, description, headers, colour=0xDEADBF, is_average=False, is_perc=True):
     embed = discord.Embed(title=title, description=description, type="rich", colour=colour)
      #last_update = await pubg_data.get_last_update()
     name = ''
     main = ''
+    second = ''
     extras = ''
     i = 1
     for row in players_table:
-        name += str(i) + ". " + row[0] + '\n'
+        name += str(i) + ". " + row[0] + " [" + str(round(row[6])) + "]" + '\n'
         if is_average:
             main += str(round(row[1] * 100, 2)) + '\n'
+            second = str(row[2])
         else:
             main += str(round(row[1], 2)) + '\n'
-        extras += str(row[2]) + "/" + str(row[3]) + "/" + str(row[4]) + "/" + str(row[5]) + '\n'
+            if is_perc:
+                second = str(round(row[2] * 100, 2))
+            else:
+                second = str(round(row[2], 2))
+
+        extras += second + "/" + str(row[3]) + "/" + str(row[4]) + "/" + str(row[5]) + '\n'
         i = i + 1
 
     embed.add_field(name="Nick", value=name, inline=True)
@@ -37,6 +44,24 @@ async def embed_default(players_table, title, description, headers, colour=0xDEA
     embed.add_field(name=headers, value=extras, inline=True)
 
     return embed
+
+
+async def embed_roster(title, description, colour=0xDEADBF):
+    embed = discord.Embed(title=title, description=description, type="rich", colour=colour)
+     #last_update = await pubg_data.get_last_update()
+    list = await pubg_data.get_players_list()
+    embed.description = str(len(list))
+
+    name = ''
+
+    for row in list:
+        #print(row["player_name"])
+        name += row["player_name"] + '\n'
+
+    embed.add_field(name="Nick", value=name, inline=True)
+
+    return embed
+
 
 
 async def embed_best_data():
@@ -56,7 +81,7 @@ async def embed_best_data():
 
     embed.add_field(name="Nick", value=name, inline=True)
     embed.add_field(name="Score", value=main, inline=True)
-    embed.add_field(name="W/T10/P/K", value=extras, inline=True)
+    embed.add_field(name="W/T10/K/P", value=extras, inline=True)
 
     return embed
 
