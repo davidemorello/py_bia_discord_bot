@@ -4,10 +4,32 @@ import json
 import asyncio
 from pubg import pubg_rank_generator
 from datetime import datetime
+import random
 
 pubg_file = config.config['pubg_file']
 pubg_player_stats = config.config['pubg_player_stats']
 min_played_match = int(config.config["min_played_match"])
+
+
+async def build_teams(members, gametype):
+    """
+
+    :param members:
+    :param gametype:
+    :return:
+    """
+    playerlist = []
+    result = []
+    for m in members:
+        ran = random.choice(range(1, 1000))
+        playerlist.append([m, ran])
+
+
+    playerlist.sort(key=lambda x: (x[1]), reverse=True)
+    if(gametype == "duo"):
+        return
+    elif(gametype == "squad"):
+        return
 
 
 # region Chiamate API pubg LIVE
@@ -201,6 +223,17 @@ async def get_lifetime_player_stats(player_name):
 
 
 # region GET common LOCAL
+async def get_players_list():
+    """
+
+    :return:
+    """
+    with open(pubg_file) as file:
+        data = json.load(file)
+
+    return data["users"]
+
+
 async def get_all_players_stats():
     """
 
